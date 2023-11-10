@@ -7,7 +7,7 @@ require (
 	github.com/khulnasoft-lab/libbpfgo/helpers v0.4.5
 )
 
-require golang.org/x/sys v0.7.0 // indirect
+require golang.org/x/sys v0.14.0 // indirect
 
 replace github.com/khulnasoft-lab/libbpfgo => ../../
 
