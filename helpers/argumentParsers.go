@@ -6,6 +6,7 @@ import (
 	"net"
 	"strconv"
 	"strings"
+	"sync/atomic"
 
 	"golang.org/x/sys/unix"
 )
@@ -996,6 +997,104 @@ func ParsePtraceRequestArgument(rawValue uint64) (PtraceRequestArgument, error) 
 	return 0, fmt.Errorf("not a valid ptrace request value: %d", rawValue)
 }
 
+type SocketcallCallArgument uint64
+
+const (
+	SYS_SOCKET SocketcallCallArgument = iota + 1
+	SYS_BIND
+	SYS_CONNECT
+	SYS_LISTEN
+	SYS_ACCEPT
+	SYS_GETSOCKNAME
+	SYS_GETPEERNAME
+	SYS_SOCKETPAIR
+	SYS_SEND
+	SYS_RECV
+	SYS_SENDTO
+	SYS_RECVFROM
+	SYS_SHUTDOWN
+	SYS_SETSOCKOPT
+	SYS_GETSOCKOPT
+	SYS_SENDMSG
+	SYS_RECVMSG
+	SYS_ACCEPT4
+	SYS_RECVMMSG
+	SYS_SENDMMSG
+)
+
+func (s SocketcallCallArgument) Value() uint64 {
+	return uint64(s)
+}
+
+var socketcallCallStringMap = map[SocketcallCallArgument]string{
+	SYS_SOCKET:      "SYS_SOCKET",
+	SYS_BIND:        "SYS_BIND",
+	SYS_CONNECT:     "SYS_CONNECT",
+	SYS_LISTEN:      "SYS_LISTEN",
+	SYS_ACCEPT:      "SYS_ACCEPT",
+	SYS_GETSOCKNAME: "SYS_GETSOCKNAME",
+	SYS_GETPEERNAME: "SYS_GETPEERNAME",
+	SYS_SOCKETPAIR:  "SYS_SOCKETPAIR",
+	SYS_SEND:        "SYS_SEND",
+	SYS_RECV:        "SYS_RECV",
+	SYS_SENDTO:      "SYS_SENDTO",
+	SYS_RECVFROM:    "SYS_RECVFROM",
+	SYS_SHUTDOWN:    "SYS_SHUTDOWN",
+	SYS_SETSOCKOPT:  "SYS_SETSOCKOPT",
+	SYS_GETSOCKOPT:  "SYS_GETSOCKOPT",
+	SYS_SENDMSG:     "SYS_SENDMSG",
+	SYS_RECVMSG:     "SYS_RECVMSG",
+	SYS_ACCEPT4:     "SYS_ACCEPT4",
+	SYS_RECVMMSG:    "SYS_RECVMMSG",
+	SYS_SENDMMSG:    "SYS_SENDMMSG",
+}
+
+func (s SocketcallCallArgument) String() string {
+	var res string
+
+	if sdName, ok := socketcallCallStringMap[s]; ok {
+		res = sdName
+	} else {
+		res = strconv.Itoa(int(s))
+	}
+
+	return res
+}
+
+var socketcallCallMap = map[uint64]SocketcallCallArgument{
+	SYS_SOCKET.Value():      SYS_SOCKET,
+	SYS_BIND.Value():        SYS_BIND,
+	SYS_CONNECT.Value():     SYS_CONNECT,
+	SYS_LISTEN.Value():      SYS_LISTEN,
+	SYS_ACCEPT.Value():      SYS_ACCEPT,
+	SYS_GETSOCKNAME.Value(): SYS_GETSOCKNAME,
+	SYS_GETPEERNAME.Value(): SYS_GETPEERNAME,
+	SYS_SOCKETPAIR.Value():  SYS_SOCKETPAIR,
+	SYS_SEND.Value():        SYS_SEND,
+	SYS_RECV.Value():        SYS_RECV,
+	SYS_SENDTO.Value():      SYS_SENDTO,
+	SYS_RECVFROM.Value():    SYS_RECVFROM,
+	SYS_SHUTDOWN.Value():    SYS_SHUTDOWN,
+	SYS_SETSOCKOPT.Value():  SYS_SETSOCKOPT,
+	SYS_GETSOCKOPT.Value():  SYS_GETSOCKOPT,
+	SYS_SENDMSG.Value():     SYS_SENDMSG,
+	SYS_RECVMSG.Value():     SYS_RECVMSG,
+	SYS_ACCEPT4.Value():     SYS_ACCEPT4,
+	SYS_RECVMMSG.Value():    SYS_RECVMMSG,
+	SYS_SENDMMSG.Value():    SYS_SENDMMSG,
+}
+
+// ParseSocketcallCall parses the `call` argument of the `socketcall` syscall
+// http://man7.org/linux/man-pages/man2/socketcall.2.html
+// https://elixir.bootlin.com/linux/latest/source/include/uapi/linux/net.h
+func ParseSocketcallCall(rawValue uint64) (SocketcallCallArgument, error) {
+	if v, ok := socketcallCallMap[rawValue]; ok {
+		return v, nil
+	}
+
+	return 0, fmt.Errorf("not a valid socketcall call value: %d", rawValue)
+}
+
 type SocketDomainArgument uint64
 
 const (
@@ -1096,8 +1195,6 @@ var socketDomainStringMap = map[SocketDomainArgument]string{
 	AF_XDP:        "AF_XDP",
 }
 
-// String parses the `domain` bitmask argument of the `socket` syscall
-// http://man7.org/linux/man-pages/man2/socket.2.html
 func (s SocketDomainArgument) String() string {
 	var res string
 
@@ -1158,6 +1255,8 @@ var socketDomainMap = map[uint64]SocketDomainArgument{
 	AF_XDP.Value():        AF_XDP,
 }
 
+// ParseSocketDomainArgument parses the `domain` bitmask argument of the `socket` syscall
+// http://man7.org/linux/man-pages/man2/socket.2.html
 func ParseSocketDomainArgument(rawValue uint64) (SocketDomainArgument, error) {
 	v, ok := socketDomainMap[rawValue]
 	if !ok {
@@ -3156,6 +3255,67 @@ func ParseLegacyGUPFlags(rawValue uint64) LegacyGUPFlag {
 	}
 
 	return LegacyGUPFlag{stringValue: strings.Join(f, "|"), rawValue: uint32(rawValue)}
+}
+
+var currentOSGUPFlagsParse uint32
+var skipDetermineGUPFlagsFunc uint32
+
+const gupFlagsChangeVersion = "6.3.0"
+
+// ParseGUPFlagsCurrentOS parse the GUP flags received according to current machine OS version.
+// It uses optimizations to perform better than ParseGUPFlagsForOS
+func ParseGUPFlagsCurrentOS(rawValue uint64) (SystemFunctionArgument, error) {
+	const (
+		newVersionsParsing = iota
+		legacyParsing
+	)
+	if atomic.LoadUint32(&skipDetermineGUPFlagsFunc) == 0 {
+		osInfo, err := GetOSInfo()
+		if err != nil {
+			return nil, fmt.Errorf("error getting current OS info - %s", err)
+		}
+		compare, err := osInfo.CompareOSBaseKernelRelease(gupFlagsChangeVersion)
+		if err != nil {
+			return nil, fmt.Errorf(
+				"error comparing OS versions to determine how to parse GUP flags - %s",
+				err,
+			)
+		}
+		if compare == KernelVersionOlder {
+			atomic.StoreUint32(&currentOSGUPFlagsParse, legacyParsing)
+		} else {
+			atomic.StoreUint32(&currentOSGUPFlagsParse, newVersionsParsing)
+		}
+		// Avoid doing this check in the future
+		atomic.StoreUint32(&skipDetermineGUPFlagsFunc, 1)
+	}
+
+	// Don't really need to use atomics here, as the value is only used here
+	// and is set in an atomic way
+	switch currentOSGUPFlagsParse {
+	case legacyParsing:
+		return ParseLegacyGUPFlags(rawValue), nil
+	case newVersionsParsing:
+		return ParseGUPFlags(rawValue), nil
+	default:
+		return nil, fmt.Errorf("no parsing function for GUP flags was found to this OD version")
+	}
+}
+
+// ParseGUPFlagsForOS parse the GUP flags received according to given OS version.
+func ParseGUPFlagsForOS(osInfo *OSInfo, rawValue uint64) (SystemFunctionArgument, error) {
+	compare, err := osInfo.CompareOSBaseKernelRelease(gupFlagsChangeVersion)
+	if err != nil {
+		return nil, fmt.Errorf(
+			"error comparing OS versions to determine how to parse GUP flags - %s",
+			err,
+		)
+	}
+
+	if compare == KernelVersionOlder {
+		return ParseLegacyGUPFlags(rawValue), nil
+	}
+	return ParseGUPFlags(rawValue), nil
 }
 
 // =====================================================
