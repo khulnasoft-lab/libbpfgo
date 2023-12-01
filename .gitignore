@@ -5,5 +5,5 @@ selftest/*/*-static
 selftest/*/*-dynamic
 selftest/uprobe/ctest
 selftest/uprobe/gotest
-testing/tracee
+testing/tracker
 .vagrant*

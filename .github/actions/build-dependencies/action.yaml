@@ -1,6 +1,6 @@
 name: Build Dependencies
 description: |
-  Install build dependencies to test and compile tracee artifacts
+  Install build dependencies to test and compile tracker artifacts
 inputs:
   go-version:
     description: go version
