@@ -1,4 +1,4 @@
-module github.com/khulnasoft-lab/libbpfgo/selftest/tracing
+module github.com/khulnasoft-lab/libbpfgo/selftest/tracing-by-offset
 
 go 1.18
 
@@ -7,7 +7,7 @@ require (
 	github.com/khulnasoft-lab/libbpfgo/helpers v0.4.5
 )
 
-require golang.org/x/sys v0.7.0 // indirect
+require golang.org/x/sys v0.16.0 // indirect
 
 replace github.com/khulnasoft-lab/libbpfgo => ../../
 
