@@ -1,6 +1,6 @@
 # libbpfgo
 
-<img src="docs/images/aqua-tux.png" width="150" height="auto">
+<img src="docs/images/khulnasoft-tux.png" width="150" height="auto">
 
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/khulnasoft-lab/libbpfgo)](https://github.com/khulnasoft-lab/libbpfgo/releases)
 [![Go Report Card](https://goreportcard.com/badge/github.com/khulnasoft-lab/libbpfgo)](https://goreportcard.com/report/github.com/khulnasoft-lab/libbpfgo)
@@ -133,7 +133,7 @@ For further information, check [Vagrantfile.md](./docs/Vagrantfile.md).
 
 Please check our github milestones for an idea of the project roadmap. The general goal is to fully implement/expose libbpf's API in Go as seamlessly as possible.
 
-- [How to Build eBPF Programs with libbpfgo](https://blog.aquasec.com/libbpf-ebpf-programs).
+- [How to Build eBPF Programs with libbpfgo](https://blog.khulnasoft.com/libbpf-ebpf-programs).
 - [selftests](./selftest) are small program using libbpfgo and might be good usage examples.
 - [tracee-ebpf](https://github.com/khulnasoft/tracee/tree/main/cmd/tracee-ebpf) is a robust consumer of this project.
 - Feel free to ask questions by creating a new [Discussion](https://github.com/khulnasoft-lab/libbpfgo/discussions), we'd love to help.
