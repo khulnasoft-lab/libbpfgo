@@ -194,7 +194,7 @@ enum xdp_action
 //
 // COMPLETE NETWORK TYPES
 //
-// NOTE: It is not required that types are complete in this file, as tracker uses
+// NOTE: It is not required that types are complete in this file, as tracee uses
 //       CO-RE for calculating struct field offsets. The thing is: for protocol
 //       headers, sometimes, the type is an exact copy of the header that will
 //       receive a payload copy. This makes it impossible not to have the full
