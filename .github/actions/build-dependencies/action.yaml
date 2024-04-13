@@ -4,12 +4,12 @@ description: |
 inputs:
   go-version:
     description: go version
-    default: "1.18"
+    default: "1.21"
 runs:
   using: composite
   steps:
     - name: Setup Go
-      uses: actions/setup-go@v4
+      uses: actions/setup-go@v5
       with:
         go-version: "${{ inputs.go-version }}"
     - name: Install Compilers & Formatters
