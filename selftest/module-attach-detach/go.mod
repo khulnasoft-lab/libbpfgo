@@ -1,4 +1,4 @@
-module github.com/khulnasoft-lab/libbpfgo/selftest/tracing
+module github.com/khulnasoft-lab/libbpfgo/selftest/module-attach-detach
 
 go 1.21
 
