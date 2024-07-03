@@ -4,4 +4,4 @@ go 1.21
 
 replace github.com/khulnasoft-lab/libbpfgo => ../../
 
-require github.com/khulnasoft-lab/libbpfgo v0.0.0
+require github.com/khulnasoft-lab/libbpfgo v0.5.0
