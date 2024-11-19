@@ -126,7 +126,7 @@ func symbolToOffset(path, symbol string) (uint64, error) {
 			// addr space.
 			for m := range sectionsToSearchForSymbol {
 				if syms[j].Value >= sectionsToSearchForSymbol[m].Addr &&
-+					syms[j].Value <= sectionsToSearchForSymbol[m].Addr+sectionsToSearchForSymbol[m].Size {
+					syms[j].Value <= sectionsToSearchForSymbol[m].Addr+sectionsToSearchForSymbol[m].Size {
 					executableSection = sectionsToSearchForSymbol[m]
 				}
 			}

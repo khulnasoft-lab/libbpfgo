@@ -1,3 +1,4 @@
+// Deprecated: helpers package is deprecated and will be removed.
 package helpers
 
 import (
