@@ -11,23 +11,20 @@ import (
 
 // Reset only effective capabilites
 func resetEffectiveCapabilities() error {
-    // Store original capabilities for cleanup
-    original := cap.GetProc()
-    // current capability
-    existing := cap.GetProc()
-    // Clear all effective capabilites
-    if err := existing.ClearFlag(cap.Effective); err != nil {
-        // Restore original capabilities on error
-        original.SetProc()
-        return fmt.Errorf("error cleaning effective capabilites %w", err)
-    }
-    // set updated capabilitis to current process
-    if err := existing.SetProc(); err != nil {
-        // Restore original capabilities on error
-        original.SetProc()
-        return fmt.Errorf("error during update capabilites %w", err)
-    }
-    return nil
+	// current capability
+	existing := cap.GetProc()
+
+	// Clear all effective capabilites
+	if err := existing.ClearFlag(cap.Effective); err != nil {
+		return fmt.Errorf("error cleaning effective capabilites %w", err)
+	}
+
+	// set updated capabilitis to current process
+	if err := existing.SetProc(); err != nil {
+		return fmt.Errorf("error during update capabilites %w", err)
+	}
+
+	return nil
 }
 
 // Enforce effective capabilites only

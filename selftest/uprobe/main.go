@@ -91,7 +91,7 @@ recvLoop:
 
 // symbolToOffset attempts to resolve a 'symbol' name in the binary found at
 // 'path' to an offset. The offset can be used for attaching a u(ret)probe
-func symbolToOffset(path, symbol string) (uint64, error) {
+func symbolToOffset(path, symbol string) (uint32, error) {
 	f, err := elf.Open(path)
 	if err != nil {
 		return 0, fmt.Errorf("could not open elf file to resolve symbol offset: %w", err)
@@ -125,8 +125,8 @@ func symbolToOffset(path, symbol string) (uint64, error) {
 			// Find what section the symbol is in by checking the executable section's
 			// addr space.
 			for m := range sectionsToSearchForSymbol {
-				if syms[j].Value >= sectionsToSearchForSymbol[m].Addr &&
-					syms[j].Value <= sectionsToSearchForSymbol[m].Addr+sectionsToSearchForSymbol[m].Size {
+				if syms[j].Value > sectionsToSearchForSymbol[m].Addr &&
+					syms[j].Value < sectionsToSearchForSymbol[m].Addr+sectionsToSearchForSymbol[m].Size {
 					executableSection = sectionsToSearchForSymbol[m]
 				}
 			}
@@ -135,7 +135,7 @@ func symbolToOffset(path, symbol string) (uint64, error) {
 				return 0, errors.New("could not find symbol in executable sections of binary")
 			}
 
-			return syms[j].Value - executableSection.Addr + executableSection.Offset, nil
+			return uint32(syms[j].Value - executableSection.Addr + executableSection.Offset), nil
 		}
 	}
 
