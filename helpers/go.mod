@@ -1,10 +1,11 @@
 module github.com/khulnasoft-lab/libbpfgo/helpers
 
 go 1.21
+toolchain go1.23.7
 
 require (
 	github.com/stretchr/testify v1.10.0
-	golang.org/x/sys v0.30.0
+	golang.org/x/sys v0.31.0
 )
 
 require (
