@@ -183,7 +183,8 @@ func (p *BPFProg) SetExpectedAttachType(attachType BPFAttachType) error {
 	return nil
 }
 
-// getCgroupDirFD returns a file descriptor for a given cgroup2 directory path
+// getCgroupDirFD returns a file descriptor for the specified cgroupv2 directory path.
+// It opens the directory in read-only mode with directory flags and returns an error if the operation fails.
 func getCgroupDirFD(cgroupV2DirPath string) (int, error) {
 	// revive:disable
 	const (
