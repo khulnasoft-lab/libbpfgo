@@ -1,7 +1,5 @@
 # libbpfgo
 
-<img src="docs/images/khulnasoft-tux.png" width="150" height="auto">
-
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/khulnasoft-lab/libbpfgo)](https://github.com/khulnasoft-lab/libbpfgo/releases)
 [![Go Report Card](https://goreportcard.com/badge/github.com/khulnasoft-lab/libbpfgo)](https://goreportcard.com/report/github.com/khulnasoft-lab/libbpfgo)
 [![License](https://img.shields.io/github/license/khulnasoft-lab/libbpfgo)](https://github.com/khulnasoft-lab/libbpfgo/blob/main/LICENSE)
@@ -16,7 +14,7 @@
 * [Learn more](#learn-more)
 
 
-libbpfgo is a Go library for Linux's [eBPF](https://ebpf.io/) project. It was created for [Tracker](https://github.com/khulnasoft/tracker), our open source Runtime Security, and eBPF tracing tool, written in Go. If you are interested in eBPF and its applications, check out Tracker at Github: [https://github.com/khulnasoft/tracker](https://github.com/khulnasoft/tracker).
+libbpfgo is a Go library for Linux's [eBPF](https://ebpf.io/) project. It was created for [Tracee](https://github.com/khulnasoft-lab/tracker), our open source Runtime Security, and eBPF tracing tool, written in Go. If you are interested in eBPF and its applications, check out Tracee at Github: [https://github.com/khulnasoft-lab/tracker](https://github.com/khulnasoft-lab/tracker).
 
 libbpfgo is built around [libbpf](https://github.com/libbpf/libbpf) - the standard library for interacting with eBPF programs from userspace - which is a C library maintained in Linux upstream. We have created libbpfgo as a thin Go wrapper around the libbpf project.
 
@@ -25,7 +23,7 @@ libbpfgo is built around [libbpf](https://github.com/libbpf/libbpf) - the standa
 libbpfgo uses CGO to interop with libbpf and will expect to be linked with libbpf at run or link time. Simply importing libbpfgo is not enough to get started, and you will need to fulfill the required dependency in one of the following ways:
 
 1. Install libbpf as a shared object in the system. Libbpf may already be packaged for your distribution and, if not, you can build and install from source. More info [here](https://github.com/libbpf/libbpf).
-1. Embed libbpf into your Go project as a vendored dependency. This means that the libbpf code is statically linked into the resulting binary, and there are no runtime dependencies.  [Tracker](https://github.com/khulnasoft/tracker) takes this approach.
+1. Embed libbpf into your Go project as a vendored dependency. This means that the libbpf code is statically linked into the resulting binary, and there are no runtime dependencies.  [Tracee](https://github.com/khulnasoft-lab/tracker) takes this approach.
 
 ## Building
 
@@ -135,5 +133,5 @@ Please check our github milestones for an idea of the project roadmap. The gener
 
 - [How to Build eBPF Programs with libbpfgo](https://blog.khulnasoft.com/libbpf-ebpf-programs).
 - [selftests](./selftest) are small program using libbpfgo and might be good usage examples.
-- [tracker-ebpf](https://github.com/khulnasoft/tracker/tree/main/cmd/tracker-ebpf) is a robust consumer of this project.
+- [tracker-ebpf](https://github.com/khulnasoft-lab/tracker/tree/main/cmd/tracker-ebpf) is a robust consumer of this project.
 - Feel free to ask questions by creating a new [Discussion](https://github.com/khulnasoft-lab/libbpfgo/discussions), we'd love to help.
