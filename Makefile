@@ -34,7 +34,6 @@ LDFLAGS =
 
 # golang
 
-
 CGO_CFLAGS_STATIC = "-I$(abspath $(OUTPUT)) -I$(LIBBPF_INCLUDE_UAPI)"
 CGO_LDFLAGS_STATIC = "$(shell PKG_CONFIG_PATH=$(LIBBPF_OBJDIR) $(PKGCONFIG) --static --libs libbpf)"
 CGO_EXTLDFLAGS_STATIC = '-w -extldflags "-static"'

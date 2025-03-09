@@ -1,3 +1,5 @@
+// Deprecated: helpers package is deprecated and will be removed.
+// See https://github.com/khulnasoft/tracker/pull/4090
 package helpers
 
 import (
@@ -239,7 +241,7 @@ func (btfi *OSInfo) discoverOSDistro() error {
 	return nil
 }
 
-func FtraceEnabled() (bool, error) {
+func FTrackernabled() (bool, error) {
 	b, err := os.ReadFile("/proc/sys/kernel/ftrace_enabled")
 	if err != nil {
 		return false, fmt.Errorf("could not read from ftrace_enabled file: %s", err.Error())
