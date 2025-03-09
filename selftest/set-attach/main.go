@@ -14,6 +14,12 @@ import (
 	bpf "github.com/khulnasoft-lab/libbpfgo"
 )
 
+// main sets up and attaches an eBPF program, then polls a ring buffer for events.
+// It creates a BPF module from "main.bpf.o", retrieves the "foobar" program, and sets its expected attach type to BPFAttachTypeTraceFentry.
+// The function configures the program’s attach target based on system architecture and verifies the auto-attach setting.
+// After loading the BPF object and attaching the program, main initializes a ring buffer to collect events
+// and spawns a goroutine to generate events. It continuously polls for events, validating that each contains the expected value,
+// and exits on error or after receiving more than five valid events.
 func main() {
 	bpfModule, err := bpf.NewModuleFromFile("main.bpf.o")
 	if err != nil {
