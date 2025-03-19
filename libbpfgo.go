@@ -100,49 +100,20 @@ func BPFMapTypeIsSupported(mapType MapType) (bool, error) {
 	return supportedC == 1, nil
 }
 
-// BPFHelperIsSupported checks if a specific BPF helper function is supported for a given program type.
-// This function probes the BPF helper using libbpf and returns whether the helper is supported.
-//
-// Important Notes for the Caller:
-//
-//  1. libbpf probes may return success (`true`) even if the BPF program load would fail due to permission issues (EPERM).
-//     To ensure reliability, it is necessary to either run with sufficient capabilities or explicitly check for EPERM.
-//     Reference: https://github.com/libbpf/bpftool/blob/a5c058054cc71836930e232162e8bd1ec6705eaf/src/feature.c#L694-L701
-//
-//  2. libbpf does not always clear `errno` in certain scenarios. For example, if the file `/proc/version_signature`
-//     is missing, libbpf may set `errno` to ENOENT (errno=2) and leave it uncleared, even if the helper is supported.
-//     Reference: https://github.com/libbpf/libbpf/blob/09b9e83102eb8ab9e540d36b4559c55f3bcdb95d/src/libbpf_probes.c#L33-L39
-//
-//  3. If the function returns `true` while running with appropriate capabilities, the helper is assumed to be supported.
-//     This behavior is documented in libbpf:
-//     Reference: https://github.com/libbpf/libbpf/blob/09b9e83102eb8ab9e540d36b4559c55f3bcdb95d/src/libbpf_probes.c#L448-L464
-//
-// Caveats:
-//   - A return value of `true` does not guarantee that the BPF program will load successfully. It is critical to verify
-//     permissions or run with sufficient capabilities for accurate results.
-// BPFHelperIsSupported checks whether a specific BPF helper function is supported for the given BPF program type.
-// It invokes a libbpf probe to determine support and returns true if the helper is available.
-// helper not supported
-if retC < 0 {
-	return false, fmt.Errorf("operation failed for function `%s` with program type `%s`: %w", funcId, progType, syscall.Errno(-retC))
-}
+func BPFHelperIsSupported(progType BPFProgType, funcId string) (bool, error) {
+	retC := C.libbpf_probe_bpf_helper(C.enum_bpf_prog_type(int(progType)), nil)
 
-	var innerErr error
-
-	// helper not supported
 	if retC < 0 {
-		return false, fmt.Errorf("operation failed for function `%s` with program type `%s`: %w. (errno: %v)", funcId, progType, syscall.Errno(-retC), errno)
+		return false, fmt.Errorf("operation failed for function `%s` with program type `%s`: %w", funcId, progType, syscall.Errno(-retC))
 	}
 
-	// Handle unexpected errno values returned by libbpf. For example, errno may still
-	// contain a previous value like ENOENT, even when the helper is supported.
-	if errno != nil {
-		innerErr = fmt.Errorf("unexpected errno for function `%s` with program type `%s`. (errno: %v)", funcId, progType, errno)
+	// Handle unexpected errno values returned by libbpf.
+	if errno := syscall.Errno(-retC); errno != 0 {
+		return false, fmt.Errorf("unexpected errno for function `%s` with program type `%s`: %v", funcId, progType, errno)
 	}
 
-	// If running with capabilities and retC==1 its assumed the helper is supported. Reference:
-	// https://github.com/libbpf/libbpf/blob/09b9e83102eb8ab9e540d36b4559c55f3bcdb95d/src/libbpf_probes.c#L448-L464
-	return retC == 1, innerErr
+	// If retC == 1 and running with capabilities, the helper is supported.
+	return retC == 1, nil
 }
 
 //
