@@ -1,4 +1,4 @@
-module github.com/khulnasoft-lab/libbpfgo/selftest/probe-ringbuf-non-supported
+module github.com/khulnasoft-lab/libbpfgo/selftest/map-pin-info
 
 go 1.21
 
