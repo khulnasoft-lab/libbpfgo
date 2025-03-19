@@ -1,7 +1,5 @@
 # libbpfgo
 
-<img src="docs/images/khulnasoft-tux.png" width="150" height="auto">
-
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/khulnasoft-lab/libbpfgo)](https://github.com/khulnasoft-lab/libbpfgo/releases)
 [![Go Report Card](https://goreportcard.com/badge/github.com/khulnasoft-lab/libbpfgo)](https://goreportcard.com/report/github.com/khulnasoft-lab/libbpfgo)
 [![License](https://img.shields.io/github/license/khulnasoft-lab/libbpfgo)](https://github.com/khulnasoft-lab/libbpfgo/blob/main/LICENSE)
