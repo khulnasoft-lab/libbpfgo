@@ -1,4 +1,4 @@
-module github.com/khulnasoft-lab/libbpfgo/selftest/map-pin-info
+module github.com/khulnasoft-lab/libbpfgo/selftest/probe-ringbuf
 
 go 1.21
 
