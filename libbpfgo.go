@@ -122,10 +122,10 @@ func BPFMapTypeIsSupported(mapType MapType) (bool, error) {
 //     permissions or run with sufficient capabilities for accurate results.
 // BPFHelperIsSupported checks whether a specific BPF helper function is supported for the given BPF program type.
 // It invokes a libbpf probe to determine support and returns true if the helper is available.
-// If the probe returns a negative result, the function returns false along with an error detailing the failure and the associated errno.
-// Additionally, if the probe indicates support but an unexpected errno is still present, that error is also reported.
-func BPFHelperIsSupported(progType BPFProgType, funcId BPFFunc) (bool, error) {
-	retC, errno := C.libbpf_probe_bpf_helper(C.enum_bpf_prog_type(int(progType)), C.enum_bpf_func_id(int(funcId)), nil)
+// helper not supported
+if retC < 0 {
+	return false, fmt.Errorf("operation failed for function `%s` with program type `%s`: %w", funcId, progType, syscall.Errno(-retC))
+}
 
 	var innerErr error
 
