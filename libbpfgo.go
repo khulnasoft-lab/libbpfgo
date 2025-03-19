@@ -87,6 +87,10 @@ func BPFProgramTypeIsSupported(progType BPFProgType) (bool, error) {
 	return supportedC == 1, nil
 }
 
+// BPFMapTypeIsSupported checks whether the specified BPF map type is supported by libbpf.
+// It invokes the underlying libbpf probe to determine support. If the probe returns a value less than one,
+// the function returns false along with a corresponding syscall error. Otherwise, it returns true if the
+// probe yields a value of exactly one.
 func BPFMapTypeIsSupported(mapType MapType) (bool, error) {
 	supportedC := C.libbpf_probe_bpf_map_type(C.enum_bpf_map_type(int(mapType)), nil)
 	if supportedC < 1 {
@@ -116,7 +120,10 @@ func BPFMapTypeIsSupported(mapType MapType) (bool, error) {
 // Caveats:
 //   - A return value of `true` does not guarantee that the BPF program will load successfully. It is critical to verify
 //     permissions or run with sufficient capabilities for accurate results.
-//   - If `retC < 0`, the helper is not supported. In such cases, additional details can be found in `errno`.
+// BPFHelperIsSupported checks whether a specific BPF helper function is supported for the given BPF program type.
+// It invokes a libbpf probe to determine support and returns true if the helper is available.
+// If the probe returns a negative result, the function returns false along with an error detailing the failure and the associated errno.
+// Additionally, if the probe indicates support but an unexpected errno is still present, that error is also reported.
 func BPFHelperIsSupported(progType BPFProgType, funcId BPFFunc) (bool, error) {
 	retC, errno := C.libbpf_probe_bpf_helper(C.enum_bpf_prog_type(int(progType)), C.enum_bpf_func_id(int(funcId)), nil)
 

@@ -241,7 +241,10 @@ func (btfi *OSInfo) discoverOSDistro() error {
 	return nil
 }
 
-func FtraceEnabled() (bool, error) {
+// FTrackernabled checks if ftrace is enabled by reading the "/proc/sys/kernel/ftrace_enabled" file.
+// It returns true when the file's trimmed content is exactly a single '1'. Otherwise, if the file cannot
+// be read or its content does not conform to the expected format, it returns false along with an appropriate error.
+func FTrackernabled() (bool, error) {
 	b, err := os.ReadFile("/proc/sys/kernel/ftrace_enabled")
 	if err != nil {
 		return false, fmt.Errorf("could not read from ftrace_enabled file: %s", err.Error())
