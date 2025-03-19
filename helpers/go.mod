@@ -3,8 +3,8 @@ module github.com/khulnasoft-lab/libbpfgo/helpers
 go 1.21
 
 require (
-	github.com/stretchr/testify v1.10.0
-	golang.org/x/sys v0.30.0
+	github.com/stretchr/testify v1.9.0
+	golang.org/x/sys v0.25.0
 )
 
 require (
