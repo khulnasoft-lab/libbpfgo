@@ -24,7 +24,7 @@
 
 char _license[] SEC("license") = "GPL";
 
-const volatile bool fifo_sched = true;
+const volatile bool fifo_sched = SCX_TRUE;
 
 static u64 vtime_now;
 UEI_DEFINE(uei);
