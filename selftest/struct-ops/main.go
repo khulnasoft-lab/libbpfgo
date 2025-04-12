@@ -15,9 +15,6 @@ import (
 	bpf "github.com/khulnasoft-lab/libbpfgo"
 )
 
-// endian returns the system's byte order by examining the memory layout of a fixed int32 value.
-// It stores 0x01020304 in memory and inspects its first byte: if the byte equals 0x04, it returns
-// binary.LittleEndian; otherwise, it returns binary.BigEndian.
 func endian() binary.ByteOrder {
 	var i int32 = 0x01020304
 	u := unsafe.Pointer(&i)
@@ -30,7 +27,6 @@ func endian() binary.ByteOrder {
 	return binary.BigEndian
 }
 
-// main is the entry point that loads the BPF module from "main.bpf.o", attaches struct operations for maps of type BPF_MAP_TYPE_STRUCT_OPS, and spawns a goroutine to periodically log local and global statistics from the "stats" map. It listens for termination signals to gracefully cancel operations, clean up resources, and exit the program.
 func main() {
 	bpfModule, err := bpf.NewModuleFromFileArgs(bpf.NewModuleArgs{
 		BPFObjPath:     "main.bpf.o",
@@ -101,11 +97,6 @@ func main() {
 	os.Exit(0)
 }
 
-// getStat retrieves and aggregates per-CPU counter statistics from the provided BPF map.
-// It queries the map for two specific keys (0 and 1), converts the per-CPU raw byte data to uint64 values
-// based on the system's endianness, and sums the counts for each key.
-// The returned slice contains the aggregated counts for the two indices.
-// The function logs a fatal error and terminates the program if it fails to determine the CPU count or retrieve a map value.
 func getStat(m *bpf.BPFMap) []uint64 {
 	cpuNum, err := bpf.NumPossibleCPUs()
 	if err != nil {

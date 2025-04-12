@@ -4,9 +4,9 @@
 ; // don't remove: clangd parsing bug https://github.com/clangd/clangd/issues/1167
 #pragma clang attribute push(__attribute__((preserve_access_index)), apply_to = record)
 
-enum bool_values {
-    false_value = 0,
-    true_value = 1,
+enum scx_bool {
+    SCX_FALSE = 0,
+    SCX_TRUE = 1,
 };
 
 typedef signed char __s8;
